@@ -1,0 +1,61 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: ruslan
+      changes:
+        - createTable:
+            tableName: card
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: card_pan_enc
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: pan_hash
+                  type: VARCHAR(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last4
+                  type: CHAR(4)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: holder_name
+                  type: VARCHAR(200)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expiration_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: balance
+                  type: NUMERIC(19,2)
+                  defaultValueNumeric: 0.00
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            columnNames: pan_hash
+            constraintName: uk_card_pan_hash
+            tableName: card
+        - createIndex:
+            tableName: card
+            indexName: idx_card_last4
+            columns:
+              - column:
+                  name: last4  
