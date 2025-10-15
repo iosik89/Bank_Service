@@ -36,4 +36,6 @@ public class GlobalExceptionHandler {
                 .body(Map.of("error", "Internal error", "details", ex.getMessage()));
     }
     
+    
+    
 }

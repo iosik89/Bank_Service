@@ -31,7 +31,7 @@ public class CardController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<CardDto> createCard(@Valid @RequestBody CardDto dto) {
+	public ResponseEntity<CardDto> createCard(@Valid @RequestBody Card card) {
 	    Card card = cardService.createCard(dto);
 	    return ResponseEntity.ok(CardDto.fromEntity(card));
 	}

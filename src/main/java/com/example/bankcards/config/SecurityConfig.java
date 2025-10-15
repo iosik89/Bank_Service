@@ -33,20 +33,23 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    /*
+     * SecurityFilterChain это бин конфигурации безопасности
+     * */
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() //swager и openApi доступны без авторизации
                 .requestMatchers("/cards/**").hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
-                .loginPage("/login")  // Можно оставить стандартную страницу Spring Security
+                .loginPage("/login") //стандартная страница Spring Security
                 .permitAll()
             )
-            .httpBasic(basic -> {}); // Lambda-подход вместо устаревшего httpBasic()
+            .httpBasic(basic -> {}); 
 
         return http.build();
     }

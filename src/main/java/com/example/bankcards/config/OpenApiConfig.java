@@ -10,7 +10,12 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class OpenApiConfig {
-
+	
+	/*
+	 * Настройка конфигурации Swagger
+	 * Имя и версия API
+	 * Окно авторизации(чтобы делать запросы без постоянной авторизации)  
+	*/
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()

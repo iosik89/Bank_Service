@@ -22,6 +22,10 @@ public class Card {
     @Column(name = "card_pan_enc", nullable = false)
     private String pan; 
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+    
     @Column(name = "pan_hash", nullable = false, unique = true, length = 128)
     private String panHash;
 
