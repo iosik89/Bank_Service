@@ -1,18 +1,12 @@
 package com.example.bankcards.service;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.example.bankcards.dto.CardDto;
-import com.example.bankcards.dto.CardSearchRequest;
 import com.example.bankcards.dto.UserDto;
-import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.User;
+import com.example.bankcards.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 
@@ -20,8 +14,22 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 	
-    private final CardService cardService;
+	private final UserRepository userRepository;
+    private final PasswordEncoder encoder;
    
+
+
+	@Override
+    @PreAuthorize("hasRole('ADMIN')")
+	@Transactional
+	public UserDto createUser(UserDto dto) {
+        User user = new User();
+        user.setUsername(dto.getUsername());
+        user.setRole(dto.getRole());
+        user.setPassword(encoder.encode(dto.getPassword()));
+        user = userRepository.save(user);
+        return UserDto.fromEntity(user);
+	}
 //    @Override
 //    @Transactional(readOnly = true)
 //    public BigDecimal getUserBalance(Long userId) {
@@ -30,17 +38,7 @@ public class UserServiceImpl implements UserService {
 //                .map(Card::getBalance)
 //                .reduce(BigDecimal.ZERO, BigDecimal::add);
 //    }
-
-	@Override
-    @PreAuthorize("hasRole('ADMIN')")
-	public UserDto createUser(UserDto dto) {
-        User user = new User();
-        user.setUsername(dto.getFullName());
-        user.setRole(dto.getRole());
-        user.setId(1L); // временный id
-        return UserDto.fromEntity(user);
-	}
-
+	
 //	@Override
 //	public void deleteUser(Long id) {
 //		// TODO Auto-generated method stub

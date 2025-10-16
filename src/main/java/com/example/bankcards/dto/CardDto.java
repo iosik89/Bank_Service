@@ -5,9 +5,7 @@ import java.time.LocalDate;
 
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.Card.CardStatus;
-import com.example.bankcards.entity.User;
 import com.example.bankcards.util.CardUtil;
-
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

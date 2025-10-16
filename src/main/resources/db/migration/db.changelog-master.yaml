@@ -3,4 +3,6 @@ databaseChangeLog:
       file: db/migration/002-create-user-table.yaml
   - include:
       file: db/migration/001-create-card-table.yaml
+  - include:
+      file: db/migration/003-remove-fullname-column.yaml
 
