@@ -5,6 +5,7 @@ import java.time.LocalDate;
 
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.Card.CardStatus;
+import com.example.bankcards.entity.User;
 import com.example.bankcards.util.CardUtil;
 
 import jakarta.validation.constraints.DecimalMin;
@@ -27,6 +28,7 @@ public class CardDto {
     @NotNull(message = "Баланс обязателен")
     @DecimalMin(value = "0.00", message = "Баланс не может быть отрицательным")
 	private BigDecimal balance;
+    private Long userId;
 	
 	public static CardDto fromEntity(Card card) {
 	    CardDto dto = new CardDto();
@@ -36,18 +38,7 @@ public class CardDto {
 	    dto.expirationDate = card.getExpirationDate();
 	    dto.status = card.getStatus();
 	    dto.balance = card.getBalance();
+	    dto.userId = card.getUser() != null ? card.getUser().getId() : null;
 	    return dto;
 	}
-	
-	public static CardDto toEntity(Card card) {
-	    CardDto dto = new CardDto();
-	    dto.id = card.getId();
-	    dto.pan = CardUtil.maskCardNumber(card.getPan()); // маска **** **** **** + 4last
-	    dto.holderName = card.getHolderName();
-	    dto.expirationDate = card.getExpirationDate();
-	    dto.status = card.getStatus();
-	    dto.balance = card.getBalance();
-	    return dto;
-	}
-	
 }

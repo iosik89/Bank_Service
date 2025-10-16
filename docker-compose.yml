@@ -4,11 +4,11 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:16
-    container_name: db
+    image: postgres
+    container_name: bank_card_service
     restart: unless-stopped
     environment:
-      POSTGRES_DB: postgres
+      POSTGRES_DB: bank_card
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
     ports:

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.bankcards.dto.CardDto;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.service.CardService;
-
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,14 +23,16 @@ public class CardController {
         this.cardService = cardService;
     }
 	
+    
 	@GetMapping("/{id}")
 	public ResponseEntity<CardDto> getCard(@PathVariable Long id) {
 	    Card card = cardService.getById(id);
 	    return ResponseEntity.ok(CardDto.fromEntity(card));
 	}
 	
+    
 	@PostMapping
-	public ResponseEntity<CardDto> createCard(@Valid @RequestBody Card card) {
+	public ResponseEntity<CardDto> createCard(@Valid @RequestBody CardDto dto) {
 	    Card card = cardService.createCard(dto);
 	    return ResponseEntity.ok(CardDto.fromEntity(card));
 	}

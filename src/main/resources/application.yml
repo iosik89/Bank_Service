@@ -2,14 +2,14 @@
 # application.yml — главный конфигурационный файл Spring Boot.
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/bank_card
     username: admin
     password: password
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
 
   liquibase:
@@ -25,7 +25,15 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     operationsSorter: method
-    defaultModelsExpandDepth: 1
+
+logging:
+  level:
+    root: INFO
+    org.springframework.boot.autoconfigure: WARN   
+    org.springframework.boot: INFO
+    org.springframework: INFO
+    org.springdoc: INFO
+    liquibase: INFO
 
 
 Что нужно сделать:

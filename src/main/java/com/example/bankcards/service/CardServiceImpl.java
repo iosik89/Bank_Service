@@ -6,7 +6,10 @@ import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.DuplicateCardException;
 import com.example.bankcards.repository.CardRepository;
+import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.util.CardUtil;
+
+import lombok.AllArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,28 +19,31 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class CardServiceImpl implements CardService {
 
 	private final CardRepository cardRepository;
+	private final UserRepository userRepository;
 
-	public CardServiceImpl(CardRepository cardRepository) {
-		this.cardRepository = cardRepository;
-	}
 
 	@Override
+	@PreAuthorize("hasAnyRole('USER','ADMIN')")
 	public Card getById(Long cardId) {
 		Optional<Card> card = cardRepository.findById(cardId);
 		return card.orElseThrow(() -> new RuntimeException("Карта с id " + cardId + " не найдена"));
 	}
 	
 	@Override
-	@Transactional
 	@PreAuthorize("hasRole('ADMIN')")
+	@Transactional
 	public Card createCard(CardDto dto) {
 		
+		User user = userRepository.findById(dto.getUserId())
+		        .orElseThrow(() -> new RuntimeException("User not found"));
 	    String panHash = CardUtil.hashPan(dto.getPan());
 	    String last4 = CardUtil.getLast4(dto.getPan());	
 		
@@ -53,30 +59,39 @@ public class CardServiceImpl implements CardService {
 		card.setExpirationDate(dto.getExpirationDate());
 		card.setStatus(dto.getStatus());
 		card.setBalance(dto.getBalance());
+		card.setUser(user);
 		return cardRepository.save(card);
 	}
 	
-	@Override
-	@Transactional(readOnly = true)
-    public Page<CardDto> getUserCards(Long userId, CardSearchRequest searchRequest) {
-        Pageable pageable = PageRequest.of(searchRequest.getPage(), searchRequest.getSize()); //пагинация (страница и размер)
-
-        Page<Card> cards;
-        if (searchRequest.getStatus() != null) {
-            cards = cardRepository.findByUserIdAndStatus(
-                    userId,
-                    Card.CardStatus.valueOf(searchRequest.getStatus().toUpperCase()),
-                    pageable
-            );
-        } else if (searchRequest.getPanLast4() != null) {
-            cards = cardRepository.findByUserIdAndLast4Containing(
-                    userId, searchRequest.getPanLast4(), pageable
-            );
-        } else {
-            cards = cardRepository.findByUserId(userId, pageable);
-        }
-
-        return cards.map(CardDto::fromEntity);
+	/*
+	 * Поиск всех карты с пагинацией
+	 * */
+//	@Override
+//	@Transactional(readOnly = true)
+//    public Page<CardDto> getUserCards(Long userId, CardSearchRequest searchRequest) {
+//        Pageable pageable = PageRequest.of(searchRequest.getPage(), searchRequest.getSize()); //пагинация (страница и размер)
+//
+//        Page<Card> cards;
+//        if (searchRequest.getStatus() != null) {
+//            cards = cardRepository.findByUserIdAndStatus(
+//                    userId,
+//                    Card.CardStatus.valueOf(searchRequest.getStatus().toString().toUpperCase()), 
+//                    pageable
+//            );
+//        } else if (searchRequest.getPanLast4() != null) {
+//            cards = cardRepository.findByUserIdAndLast4Containing(
+//                    userId, searchRequest.getPanLast4(), pageable
+//            );
+//        } else {
+//            cards = cardRepository.findByUserId(userId, pageable);
+//        }
+//
+//        return cards.map(CardDto::fromEntity);
+//    }
+	
+    @Transactional(readOnly = true)
+    public List<Card> getUserCards(Long userId) {
+        return cardRepository.findCardByUserId(userId);
     }
 
 	@Override

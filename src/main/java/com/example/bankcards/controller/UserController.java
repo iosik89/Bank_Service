@@ -17,12 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.bankcards.dto.CardDto;
 import com.example.bankcards.dto.CardSearchRequest;
 import com.example.bankcards.dto.UserDto;
+import com.example.bankcards.entity.Card.CardStatus;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.service.UserService;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 
+@SecurityRequirement(name = "basicAuth")
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -36,41 +39,40 @@ public class UserController {
     // --- Методы для ADMIN ---
     @PostMapping
     @Transactional
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto dto) {
-        User user = userService.createUser(dto);
-        return ResponseEntity.ok(UserDto.fromEntity(user));
+        UserDto user = userService.createUser(dto);
+        return ResponseEntity.ok(user);
     }
 
-    @DeleteMapping("/{id}")
-    @Transactional
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
-    }
+//    @DeleteMapping("/{id}")
+//    @Transactional
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+//        userService.deleteUser(id);
+//        return ResponseEntity.noContent().build();
+//    }
 
-    // --- Методы для USER ---
-    @GetMapping("/{id}/balance")
-    @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<BigDecimal> getUserBalance(@PathVariable Long id) {
-        BigDecimal balance = userService.getUserBalance(id);
-        return ResponseEntity.ok(balance);
-    }
+//    // --- Методы для USER ---
+//    @GetMapping("/{id}/balance")
+//    @Transactional(readOnly = true)
+//    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+//    public ResponseEntity<BigDecimal> getUserBalance(@PathVariable Long id) {
+//        BigDecimal balance = userService.getUserBalance(id);
+//        return ResponseEntity.ok(balance);
+//    }
 
-    @GetMapping("/{id}/cards")
-    @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<Page<CardDto>> getUserCards(
-            @PathVariable Long id,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) String last4,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        CardSearchRequest searchRequest = new CardSearchRequest(last4, status, page, size);
-        Page<CardDto> cards = userService.getUserCards(id, searchRequest);
-        return ResponseEntity.ok(cards);
-    }
+//    @GetMapping("/{id}/cards")
+//    @Transactional(readOnly = true)
+//	@PreAuthorize("hasAnyRole('USER','ADMIN')")
+//    public ResponseEntity<Page<CardDto>> getUserCards(
+//            @PathVariable Long id,
+//            @RequestParam(required = false) CardStatus status,
+//            @RequestParam(required = false) String last4,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size
+//    ) {
+//        CardSearchRequest searchRequest = new CardSearchRequest(last4, status, page, size); 
+//        Page<CardDto> cards = userService.getUserCards(id, searchRequest);
+//        return ResponseEntity.ok(cards);
+//    }
 }

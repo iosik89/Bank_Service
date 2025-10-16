@@ -10,16 +10,16 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class OpenApiConfig {
-	
-	/*
-	 * Настройка конфигурации Swagger
-	 * Имя и версия API
-	 * Окно авторизации(чтобы делать запросы без постоянной авторизации)  
-	*/
+
+    /*
+     * Настройка конфигурации Swagger
+     * Имя и версия API
+     * Окно авторизации(чтобы делать запросы без постоянной авторизации)  
+    */
     @Bean
-    public OpenAPI customOpenAPI() {
+    OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .info(new Info().title("Bank Cards API").version("1.0"))
+                .info(new Info().title("Bank Cards API"))
                 .addSecurityItem(new SecurityRequirement().addList("basicAuth"))
                 .components(new Components()
                         .addSecuritySchemes("basicAuth",
