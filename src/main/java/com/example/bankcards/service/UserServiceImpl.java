@@ -30,25 +30,13 @@ public class UserServiceImpl implements UserService {
         user = userRepository.save(user);
         return UserDto.fromEntity(user);
 	}
-//    @Override
-//    @Transactional(readOnly = true)
-//    public BigDecimal getUserBalance(Long userId) {
-//        List<Card> cards = cardService.getUserCards(userId);
-//        return cards.stream()
-//                .map(Card::getBalance)
-//                .reduce(BigDecimal.ZERO, BigDecimal::add);
-//    }
 	
-//	@Override
-//	public void deleteUser(Long id) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	public Page<CardDto> getUserCards(Long id, CardSearchRequest searchRequest) {
-//		// TODO Auto-generated method stub
-//		return cardService.getUserCards(id, searchRequest);
-//	}
+	@Override
+    @PreAuthorize("hasRole('ADMIN')")
+	public void deleteUser(Long id) {
+		User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+		userRepository.delete(user);
+	}
+
 }
 

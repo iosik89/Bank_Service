@@ -45,6 +45,9 @@ public class Card {
     @Column(name = "balance", nullable = false, precision = 19, scale = 2)
     private BigDecimal balance;
     
+    @Column(name = "block_request", nullable = false)
+    private boolean blockRequest = false;
+    
     public enum CardStatus {
         ACTIVE, BLOCKED, EXPIRED
     }

@@ -21,7 +21,21 @@ public class GlobalExceptionHandler {
         }
         return ResponseEntity.badRequest().body(errors);
     }
-
+    
+    // 404 - карта не найдена
+    @ExceptionHandler(CardNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleCardNotFound(CardNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", ex.getMessage(), "code", "404"));
+    }
+    
+    // 403 - нет доступа
+    @ExceptionHandler(AccessDeniedCardException.class)
+    public ResponseEntity<Map<String, String>> handleAccessDenied(AccessDeniedCardException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("error", ex.getMessage(), "code", "403"));
+    }
+    
     // Валидация карты
     @ExceptionHandler(CardValidationException.class)
     public ResponseEntity<Map<String, String>> handleCardValidation(CardValidationException ex) {

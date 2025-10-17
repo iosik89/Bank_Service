@@ -5,4 +5,6 @@ databaseChangeLog:
       file: db/migration/001-create-card-table.yaml
   - include:
       file: db/migration/003-remove-fullname-column.yaml
+  - include:
+      file: db/migration/004-add-block-request.yaml
 

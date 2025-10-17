@@ -46,9 +46,10 @@ public class SecurityConfig {
                 "/swagger-ui.html",
                 "/swagger-ui/**",
                 "/v3/api-docs/**"
-            ).permitAll()
+            ).permitAll() // Остальные эндпоинты требуют аутентификации
             
-            // Остальные эндпоинты требуют аутентификации
+            .requestMatchers(HttpMethod.POST, "/cards/{cardId}/request-block").hasRole("USER")
+            .requestMatchers(HttpMethod.POST, "/cards/transfer").hasRole("USER")
             .requestMatchers("/users/**").hasRole("ADMIN")
             .requestMatchers(HttpMethod.GET,"/cards/**").hasAnyRole("USER","ADMIN")
             .requestMatchers(HttpMethod.POST,"/cards/**").hasRole("ADMIN")
