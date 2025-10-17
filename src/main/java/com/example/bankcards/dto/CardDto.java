@@ -39,4 +39,18 @@ public class CardDto {
 	    dto.userId = card.getUser() != null ? card.getUser().getId() : null;
 	    return dto;
 	}
+    /**
+     * Конвертация обратно в сущность Card (без user, panHash, last4 — добавляется в сервисе)
+     */
+    public Card toEntity() {
+        Card card = new Card();
+        card.setId(this.id);
+        card.setPan(this.pan);
+        card.setHolderName(this.holderName);
+        card.setExpirationDate(this.expirationDate);
+        card.setStatus(this.status);
+        card.setBalance(this.balance);
+        // user, panHash, last4 будут устанавливаться в CardService
+        return card;
+    }
 }
