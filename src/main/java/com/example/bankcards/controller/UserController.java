@@ -23,12 +23,13 @@ public class UserController {
     private final UserService userService; // сервис для работы с пользователями
 
     /*
-     * метод создание пользователя
+     * Создание пользователя
+     * 
+     * 
      * */
     @PostMapping("/create")
     @Transactional
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto dto) {
-    	System.out.println("Received DTO: " + dto);
     	return ResponseEntity.ok(userService.createUser(dto));
     }
 
