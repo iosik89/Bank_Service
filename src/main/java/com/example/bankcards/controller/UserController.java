@@ -23,16 +23,28 @@ public class UserController {
     private final UserService userService; // сервис для работы с пользователями
 
     /*
-     * Создание пользователя
-     * 
-     * 
+	 * Создаёт нового пользователя в системе.
+	 * 
+	 * Метод принимает DTO с данными пользователя,
+	 * сохраняет его в базе данных и возвращает созданный объект.
+	 *
+	 * @param dto объект UserDto с данными для создания пользователя
+	 * @return ResponseEntity с созданным пользователем (UserDto)
      * */
     @PostMapping("/create")
     @Transactional
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto dto) {
     	return ResponseEntity.ok(userService.createUser(dto));
     }
-
+    
+    /**
+     * Удаляет пользователя по его идентификатору.
+     *
+     * Если пользователь не найден, в сервисе выбрасывается исключение.
+     *
+     * @param id идентификатор пользователя для удаления
+     * @return ResponseEntity с сообщением об успешном удалении
+     */
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
