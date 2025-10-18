@@ -51,7 +51,7 @@ docker-compose up --build
 4. **После запуска сервис будет доступен по адресу:**
 👉 http://localhost:8080
 
-PostgreSQL запущен на порту 5432
+PostgreSQL(image: postgres container_name: bank_card_service) запущен на порту 5432
 
 
 
