@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import com.example.bankcards.dto.CardDto;
-import com.example.bankcards.dto.CardSearchRequest;
 import com.example.bankcards.entity.Card;
 
 

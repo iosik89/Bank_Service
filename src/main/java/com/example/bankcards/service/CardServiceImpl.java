@@ -37,9 +37,12 @@ public class CardServiceImpl implements CardService {
 		
 		User user = null;
 	    // Поиск пользователя — по ID или по имени
-	    if (dto.getUserId() != null) {
+	    if (dto.getUserId() != null && dto.getUserId() > 0) {
 	        user = userRepository.findById(dto.getUserId())
 	                .orElseThrow(() -> new RuntimeException("Пользователь с ID " + dto.getUserId() + " не найден"));
+	        if (dto.getHolderName() == null || dto.getHolderName().isBlank()) {
+	            dto.setHolderName(user.getUsername());
+	        }
 	    } else if (dto.getHolderName() != null && !dto.getHolderName().isBlank()) {
 	        user = userRepository.findByUsername(dto.getHolderName())
 	                .orElseThrow(() -> new RuntimeException("Пользователь с именем '" + dto.getHolderName() + "' не найден"));
