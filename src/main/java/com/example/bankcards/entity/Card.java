@@ -2,10 +2,7 @@ package com.example.bankcards.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
 import com.example.bankcards.util.PanAttributeConverter;
-
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -16,7 +13,6 @@ public class Card {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(description = "ID карты")
     private Long id;
 
     // AttributeConverter для шифрования/дешифрования

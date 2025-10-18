@@ -19,12 +19,15 @@ import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.service.CardService;
+import lombok.extern.slf4j.Slf4j;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.security.core.Authentication;
 
+@Slf4j
 @RestController
 @RequestMapping("/cards")
 @SecurityRequirement(name = "bearerAuth")
@@ -37,16 +40,35 @@ public class CardController {
 	/*
 	 * Отображает все карты текущего авторизованного пользователя
 	 * */
-    @GetMapping("/userCards")
+
+
+    /**
+     * Возвращает страницы карт текущего пользователя.
+     * Если не переданы параметры поиска — вернёт все карты (постранично).
+     * Параметры поиска (все опциональны): query, panLast4, status.
+     */
+    @GetMapping("/my")
     public ResponseEntity<Page<CardDto>> getMyCards(
             Authentication authentication,
-            @ModelAttribute CardSearchRequest searchRequest
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) String panLast4,
+            @RequestParam(required = false) Card.CardStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
     ) {
-	      User user = userRepository.findByUsername(authentication.getName())
-	    			.orElseThrow(() -> new RuntimeException("Пользователь не найден"));
-	      Long userId = user.getId();
-          Page<CardDto> cards = cardService.getUserCards(userId, searchRequest);
-          return ResponseEntity.ok(cards);
+    	log.info("🔐 Authenticated user: {}", authentication.getName());
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        log.info("✅ User found: id={}, username={}", user.getId(), user.getUsername());
+        // Если ни один фильтр не передан — вернём все карты
+        if ((query == null || query.isBlank()) && (panLast4 == null || panLast4.isBlank()) && status == null) {
+            Page<CardDto> cards = cardService.getUserCards(user.getId(), page, size);
+            return ResponseEntity.ok(cards);
+        }
+        
+        // Иначе — поиск по переданным параметрам
+        Page<CardDto> cards = cardService.searchUserCards(user.getId(), query, panLast4, status, page, size);
+        return ResponseEntity.ok(cards);
     }
     
     @GetMapping("/allCards")
@@ -58,7 +80,7 @@ public class CardController {
           Page<CardDto> cards = cardService.getAllCards(pageable);
           return ResponseEntity.ok(cards);
     }
-    
+    /***************************************************************************/
     @GetMapping("/{id}/balance")
     public ResponseEntity<BigDecimal> getCardBalance(
             @PathVariable Long id,
@@ -74,6 +96,7 @@ public class CardController {
     
     @GetMapping("/search")
     public ResponseEntity<Page<CardDto>> searchMyCards(
+    		 @Parameter( description = "ID карты")
             @RequestParam String query,
             Authentication authentication,
             @RequestParam(defaultValue = "0") int page,
@@ -100,8 +123,19 @@ public class CardController {
 	
 	@PostMapping("/transfer")
 	public ResponseEntity<String> transferBetweenOwnCards(
+		    @Parameter(
+		            description = "ID карты, с которой списываются деньги",
+		            example = "1")
 			@RequestParam Long fromCardId,
+			 @Parameter(
+			            description = "ID карты, на которую зачисляются деньги",
+			            example = "2"
+			        )
             @RequestParam Long toCardId,
+            @Parameter(
+                    description = "Сумма перевода в рублях",
+                    example = "500.00"
+                )
             @RequestParam BigDecimal amount,
             Authentication authentication) { //ищем пользователя
 	    String username = authentication.getName();

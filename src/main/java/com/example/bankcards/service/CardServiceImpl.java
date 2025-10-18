@@ -4,6 +4,8 @@ import com.example.bankcards.dto.CardDto;
 import com.example.bankcards.dto.CardSearchRequest;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.User;
+import com.example.bankcards.entity.User.Role;
+import com.example.bankcards.exception.AdminCardCreationException;
 import com.example.bankcards.exception.DuplicateCardException;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
@@ -33,19 +35,32 @@ public class CardServiceImpl implements CardService {
 	@PreAuthorize("hasRole('ADMIN')")
 	public Card createCard(CardDto dto) {
 		
-		User user = userRepository.findById(dto.getUserId())
-		        .orElseThrow(() -> new RuntimeException("User not found"));
+		User user = null;
+	    // Поиск пользователя — по ID или по имени
+	    if (dto.getUserId() != null) {
+	        user = userRepository.findById(dto.getUserId())
+	                .orElseThrow(() -> new RuntimeException("Пользователь с ID " + dto.getUserId() + " не найден"));
+	    } else if (dto.getHolderName() != null && !dto.getHolderName().isBlank()) {
+	        user = userRepository.findByUsername(dto.getHolderName())
+	                .orElseThrow(() -> new RuntimeException("Пользователь с именем '" + dto.getHolderName() + "' не найден"));
+	    } else {
+	        throw new RuntimeException("Необходимо указать либо userId, либо holderName");
+	    }
+	    // Проверяем, что найденный пользователь не является администратором
+	    if (user.getRole() == Role.ADMIN) {
+	        throw new AdminCardCreationException("Создание карт для администратора запрещено");
+	    }
+	    // Проверка, что PAN не дублируется
 	    String panHash = CardUtil.hashPan(dto.getPan());
-	    String last4 = CardUtil.getLast4(dto.getPan());	
-		
 	    if (cardRepository.existsByPanHash(panHash)) {
 	        throw new DuplicateCardException("Карта с таким PAN уже существует");
 	    }
-		
+
+	    // Создание карты
 		Card card = new Card();
 		card.setPan(dto.getPan());
 		card.setPanHash(panHash);
-		card.setLast4(last4);
+		card.setLast4(CardUtil.getLast4(dto.getPan()));
 		card.setHolderName(dto.getHolderName());
 		card.setExpirationDate(dto.getExpirationDate());
 		card.setStatus(dto.getStatus());
@@ -58,23 +73,55 @@ public class CardServiceImpl implements CardService {
 	 * Поиск всех карты с пагинацией
 	 * 
 	 * */
-	@Override
-    @PreAuthorize("hasRole('USER')")
+
+    @Override
     @Transactional(readOnly = true)
-    public Page<CardDto> getUserCards(Long userId, CardSearchRequest searchRequest) {
-	    Pageable pageable = PageRequest.of(searchRequest.getPage(), searchRequest.getSize());
+    @PreAuthorize("hasRole('USER')")
+    public Page<CardDto> getUserCards(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return cardRepository.findByUserId(userId, pageable).map(CardDto::fromEntity);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('USER')")
+    public Page<CardDto> searchUserCards(Long userId,
+                                         String query,
+                                         String panLast4,
+                                         Card.CardStatus status,
+                                         int page,
+                                         int size) {
+        Pageable pageable = PageRequest.of(page, size);
 
-        Page<Card> cards;
-
-        if (searchRequest.getStatus() != null) {
-            cards = cardRepository.findByUserIdAndStatus(userId, searchRequest.getStatus(), pageable);
-        } else if (searchRequest.getPanLast4() != null && !searchRequest.getPanLast4().isBlank()) {
-            cards = cardRepository.findByUserIdAndLast4Containing(userId, searchRequest.getPanLast4(), pageable);
-        } else {
-            cards = cardRepository.findByUserId(userId, pageable);
+        // 1) If status provided -> filter by status (and optionally panLast4/query)
+        if (status != null) {
+            if (panLast4 != null && !panLast4.isBlank()) {
+                // filter by status + pan last4 (custom repo method could be added if needed)
+                // fallback: get by status then filter in memory (not ideal for big datasets)
+                Page<Card> cards = cardRepository.findByUserIdAndStatus(userId, status, pageable);
+                return cards.map(CardDto::fromEntity);
+            }
+            return cardRepository.findByUserIdAndStatus(userId, status, pageable).map(CardDto::fromEntity);
         }
 
-        return cards.map(CardDto::fromEntity);
+        // 2) If exact pan last4 provided -> search by last4
+        if (panLast4 != null && !panLast4.isBlank()) {
+            return cardRepository.findByUserIdAndLast4Containing(userId, panLast4, pageable)
+                                 .map(CardDto::fromEntity);
+        }
+
+        // 3) If holderName (query) provided -> search holderName first (case-insensitive)
+        if (query != null && !query.isBlank()) {
+            Page<Card> byHolder = cardRepository.findByUserIdAndHolderNameContainingIgnoreCase(userId, query, pageable);
+            if (!byHolder.isEmpty()) return byHolder.map(CardDto::fromEntity);
+
+            // if no holder hits -> search by last4 as fallback
+            Page<Card> byLast4 = cardRepository.findByUserIdAndLast4Containing(userId, query, pageable);
+            return byLast4.map(CardDto::fromEntity);
+        }
+
+        // 4) default: return all user's cards
+        return cardRepository.findByUserId(userId, pageable).map(CardDto::fromEntity);
     }
 	
 	

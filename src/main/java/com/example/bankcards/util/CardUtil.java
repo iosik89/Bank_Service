@@ -18,7 +18,7 @@ public class CardUtil {
 
     /**
      * Возвращает маскированный номер карты, например **** **** **** 1234
-     */
+     */	
     public static String maskCardNumber(String pan) {
         if (pan == null || pan.length() < 4) {
             return "**** **** **** ****";

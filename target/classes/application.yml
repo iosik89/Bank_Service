@@ -34,6 +34,10 @@ logging:
     org.springframework: INFO
     org.springdoc: INFO
     liquibase: INFO
+    
+jwt:
+  secret: "superSecretKeyForJwt1234567890superSecretKey"
+  expiration: 3600000 
 
 
 Что нужно сделать:
