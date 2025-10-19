@@ -7,14 +7,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.bankcards.dto.CardDto;
-import com.example.bankcards.dto.CardSearchRequest;
+import com.example.bankcards.dto.PageResponse;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.repository.UserRepository;
@@ -70,13 +69,13 @@ public class CardController {
     }
     
     @GetMapping("/allCards")
-    public ResponseEntity<Page<CardDto>> getAllCards(
+    public ResponseEntity<PageResponse<CardDto>> getAllCards(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size   
     ) {
     	  PageRequest pageable = PageRequest.of(page, size);
           Page<CardDto> cards = cardService.getAllCards(pageable);
-          return ResponseEntity.ok(cards);
+          return ResponseEntity.ok(new PageResponse<>(cards));
     }
     /***************************************************************************/
     @GetMapping("/{id}/balance")

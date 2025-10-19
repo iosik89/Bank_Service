@@ -16,7 +16,6 @@ import lombok.Data;
 public class CardDto {
 	
 	private Long id;
-	
 	@NotBlank(message = "Номер карты не может быть пустым")
     @Pattern(regexp = "^(\\d{4} \\d{4} \\d{4} \\d{4})$", message = "Номер карты должен содержать 16 цифр")
 	private String pan; // **** **** **** 1234
