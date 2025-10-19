@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -149,13 +150,14 @@ public class CardController {
     			.orElseThrow(() -> new RuntimeException("Пользователь не найден"));
     	Long userId = user.getId();
     	cardService.requestBlockCard(userId, cardId);
-		return ResponseEntity.ok("Блокировка карты запрошена");	
+    	return ResponseEntity.ok("Блокировка карты запрошена");	
 	}
     
     @PostMapping("/{cardId}/block")
     public ResponseEntity<String> blockCard(@PathVariable Long cardId) {
         cardService.blockCard(cardId);
-        return ResponseEntity.ok("Card blocked");
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN)
+                .body("Card blocked");
     }
 	
 	

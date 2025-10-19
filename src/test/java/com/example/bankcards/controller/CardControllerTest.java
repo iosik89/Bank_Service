@@ -4,6 +4,7 @@ import com.example.bankcards.dto.CardDto;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.service.CardService;
+import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -29,9 +31,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 
 class CardControllerTest {
 
@@ -42,6 +47,9 @@ class CardControllerTest {
 
     @Mock
     private UserRepository userRepository;
+    
+    @Mock
+    private CardRepository cardRepository;
 
     @Mock
     private Authentication authentication;
@@ -106,7 +114,11 @@ class CardControllerTest {
         cardDto.setBalance(BigDecimal.valueOf(500));
         cardDto.setStatus(Card.CardStatus.ACTIVE);
 
-        Page<CardDto> page = new PageImpl<>(List.of(cardDto));
+        Page<CardDto> page = new PageImpl<>(
+                List.of(cardDto),
+                PageRequest.of(0, 5),
+                1
+        );
         when(cardService.getUserCards(user.getId(), 0, 5)).thenReturn(page);
 
         mockMvc.perform(get("/cards/my")
@@ -147,7 +159,7 @@ class CardControllerTest {
                         .param("amount", "500")
                         .principal(authentication))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Перевод выполнен успешно"));
+                .andExpect(content().string("\"Перевод выполнен успешно\""));
     }
 
     @Test
@@ -178,12 +190,22 @@ class CardControllerTest {
         mockMvc.perform(post("/cards/1/request-block")
                         .principal(authentication))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Блокировка карты запрошена"));
+                .andExpect(content().json("\"Блокировка карты запрошена\""));
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void testBlockCard_success() throws Exception {
-        mockMvc.perform(post("/cards/1/block"))
+        Long cardId = 1L;
+
+        // полностью гарантируем, что мок применится
+        CardController controller = new CardController(cardService,userRepository);
+        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+
+        // Мокаем вызов сервиса
+        doNothing().when(cardService).blockCard(cardId);
+
+        mockMvc.perform(post("/cards/{cardId}/block", cardId))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Card blocked"));
     }
