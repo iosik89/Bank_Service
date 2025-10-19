@@ -46,7 +46,7 @@ class CardServiceImplTest {
         CardDto dto = new CardDto();
         dto.setUserId(1L);
         dto.setPan("1234 5678 9012 3456");
-        dto.setHolderName("John Doe");
+        dto.setHolderName("Держатель карты");
         dto.setBalance(BigDecimal.valueOf(1000));
         dto.setExpirationDate(LocalDate.now().plusYears(1));
 
@@ -124,7 +124,7 @@ class CardServiceImplTest {
         when(cardRepository.findByUserIdAndStatus(1L, Card.CardStatus.ACTIVE, PageRequest.of(0, 10)))
                 .thenReturn(page);
 
-        Page<CardDto> result = cardService.getUserCards(1L, request);
+        Page<CardDto> result = cardService.getUserCards(1L, request.getPage(),request.getSize());
 
         assertEquals(1, result.getTotalElements());
     }

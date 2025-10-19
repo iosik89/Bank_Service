@@ -45,7 +45,7 @@ public class CardController {
     /**
      * Возвращает страницы карт текущего пользователя.
      * Если не переданы параметры поиска — вернёт все карты (постранично).
-     * Параметры поиска (все опциональны): query, panLast4, status.
+     * Параметры поиска: query, panLast4, status.
      */
     @GetMapping("/my")
     public ResponseEntity<Page<CardDto>> getMyCards(
@@ -56,10 +56,8 @@ public class CardController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
-    	log.info("🔐 Authenticated user: {}", authentication.getName());
         User user = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
-        log.info("✅ User found: id={}, username={}", user.getId(), user.getUsername());
         // Если ни один фильтр не передан — вернём все карты
         if ((query == null || query.isBlank()) && (panLast4 == null || panLast4.isBlank()) && status == null) {
             Page<CardDto> cards = cardService.getUserCards(user.getId(), page, size);
