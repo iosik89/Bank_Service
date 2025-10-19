@@ -109,8 +109,7 @@ public class CardController {
 	
 	@PostMapping("/create")
 	public ResponseEntity<CardDto> createCard(@Valid @RequestBody CardDto dto) {
-	    Card card = cardService.createCard(dto);
-	    return ResponseEntity.ok(CardDto.fromEntity(card));
+	    return ResponseEntity.ok(CardDto.fromEntity(cardService.createCard(dto)));
 	}
 	
 	@DeleteMapping("/{cardId}/delete")
