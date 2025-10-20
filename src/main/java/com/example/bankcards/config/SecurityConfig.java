@@ -37,7 +37,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-        // Отключаем CSRF для простоты (например, при использовании JWT)
         .csrf(csrf -> csrf.disable())
         // Настраиваем авторизацию
         .authorizeHttpRequests(auth -> auth
