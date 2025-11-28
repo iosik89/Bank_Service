@@ -1,11 +1,12 @@
 package com.example.bankcards.controller;
 
-import com.example.bankcards.dto.CardDto;
-import com.example.bankcards.entity.Card;
-import com.example.bankcards.entity.User;
+import com.example.bankcards.api.controllers.CardController;
+import com.example.bankcards.api.dto.CardDto;
+import com.example.bankcards.store.entities.Card;
+import com.example.bankcards.store.entities.User;
 import com.example.bankcards.service.CardService;
-import com.example.bankcards.repository.CardRepository;
-import com.example.bankcards.repository.UserRepository;
+import com.example.bankcards.store.repository.CardRepository;
+import com.example.bankcards.store.repository.UserRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.openMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -60,7 +62,7 @@ class CardControllerTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        openMocks(this);
 
         objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());

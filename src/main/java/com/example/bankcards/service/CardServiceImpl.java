@@ -1,14 +1,13 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.dto.CardDto;
-import com.example.bankcards.dto.CardSearchRequest;
-import com.example.bankcards.entity.Card;
-import com.example.bankcards.entity.User;
-import com.example.bankcards.entity.User.Role;
+import com.example.bankcards.api.dto.CardDto;
+import com.example.bankcards.store.entities.Card;
+import com.example.bankcards.store.entities.User;
+import com.example.bankcards.store.entities.User.Role;
 import com.example.bankcards.exception.AdminCardCreationException;
 import com.example.bankcards.exception.DuplicateCardException;
-import com.example.bankcards.repository.CardRepository;
-import com.example.bankcards.repository.UserRepository;
+import com.example.bankcards.store.repository.CardRepository;
+import com.example.bankcards.store.repository.UserRepository;
 import com.example.bankcards.util.CardUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -99,8 +98,6 @@ public class CardServiceImpl implements CardService {
         // 1) If status provided -> filter by status (and optionally panLast4/query)
         if (status != null) {
             if (panLast4 != null && !panLast4.isBlank()) {
-                // filter by status + pan last4 (custom repo method could be added if needed)
-                // fallback: get by status then filter in memory (not ideal for big datasets)
                 Page<Card> cards = cardRepository.findByUserIdAndStatus(userId, status, pageable);
                 return cards.map(CardDto::fromEntity);
             }

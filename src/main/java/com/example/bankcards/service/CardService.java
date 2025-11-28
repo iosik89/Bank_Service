@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import com.example.bankcards.dto.CardDto;
-import com.example.bankcards.entity.Card;
+import com.example.bankcards.api.dto.CardDto;
+import com.example.bankcards.store.entities.Card;
 
 
 public interface CardService {

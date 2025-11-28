@@ -1,7 +1,8 @@
 package com.example.bankcards.controller;
 
-import com.example.bankcards.dto.UserDto;
-import com.example.bankcards.entity.User.Role;
+import com.example.bankcards.api.controllers.UserController;
+import com.example.bankcards.api.dto.UserDto;
+import com.example.bankcards.store.entities.User.Role;
 import com.example.bankcards.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

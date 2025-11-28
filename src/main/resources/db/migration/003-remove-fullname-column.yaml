@@ -1,8 +1,0 @@
-databaseChangeLog:
-  - changeSet:
-      id: 003-remove-fullname-column
-      author: ruslan
-      changes:
-        - dropColumn:
-            tableName: users
-            columnName: full_name

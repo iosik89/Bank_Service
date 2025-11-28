@@ -1,7 +1,13 @@
 databaseChangeLog:
   - changeSet:
-      id: 2
+      id: 6
       author: ruslan
+      runOnChange: true
+      preConditions:
+        onFail: MARK_RANa
+        not:
+          tableExists:
+            tableName: users
       changes:
         - createTable:
             tableName: users
@@ -22,12 +28,6 @@ databaseChangeLog:
 
               - column:
                   name: password
-                  type: VARCHAR(255)
-                  constraints:
-                    nullable: false
-
-              - column:
-                  name: full_name
                   type: VARCHAR(255)
                   constraints:
                     nullable: false

@@ -30,7 +30,7 @@
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [Git](https://git-scm.com/)
 - [Java 17+](https://adoptium.net/)
-- [Maven](https://maven.apache.org/) (если запускаешь локально без Docker)
+- [Maven](https://maven.apache.org/) 
 
 ---
 

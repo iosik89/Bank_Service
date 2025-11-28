@@ -1,12 +1,12 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.dto.CardDto;
-import com.example.bankcards.dto.CardSearchRequest;
-import com.example.bankcards.entity.Card;
-import com.example.bankcards.entity.User;
+import com.example.bankcards.api.dto.CardDto;
+import com.example.bankcards.api.dto.CardSearchRequest;
+import com.example.bankcards.store.entities.Card;
+import com.example.bankcards.store.entities.User;
 import com.example.bankcards.exception.DuplicateCardException;
-import com.example.bankcards.repository.CardRepository;
-import com.example.bankcards.repository.UserRepository;
+import com.example.bankcards.store.repository.CardRepository;
+import com.example.bankcards.store.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 class CardServiceImplTest {
 
@@ -33,12 +34,21 @@ class CardServiceImplTest {
 
     private User testUser;
 
+    private Card testCard;
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        openMocks(this);
         testUser = new User();
         testUser.setId(1L);
         testUser.setUsername("user1");
+
+        testCard = new Card();
+        testCard.setUser(testUser);
+        testCard.setStatus(Card.CardStatus.ACTIVE);
+        testCard.setBalance(new BigDecimal(1000.00));
+
+
     }
 
     @Test
@@ -112,20 +122,19 @@ class CardServiceImplTest {
 
     @Test
     void getUserCards_withStatus() {
-        CardSearchRequest request = new CardSearchRequest();
-        request.setStatus(Card.CardStatus.ACTIVE);
-        request.setPage(0);
-        request.setSize(10);
+        Pageable pageable = PageRequest.of(0, 10);
 
-        Card card = new Card();
-        card.setId(1L);
-        Page<Card> page = new PageImpl<>(List.of(card));
+        // подготавливаем мок, чтобы репозиторий возвращал Page
+        List<Card> cards = List.of(new Card());
+        Page<Card> page = new PageImpl<>(cards, pageable, cards.size());
 
-        when(cardRepository.findByUserIdAndStatus(1L, Card.CardStatus.ACTIVE, PageRequest.of(0, 10)))
+        Mockito.when(cardRepository.findByUserId(1L, pageable))
                 .thenReturn(page);
 
-        Page<CardDto> result = cardService.getUserCards(1L, request.getPage(),request.getSize());
+        // вызов метода
+        var result = cardService.getUserCards(1L, 0, 10);
 
-        assertEquals(1, result.getTotalElements());
+        assertNotNull(result);
+        assertEquals(1, result.getContent().size());
     }
 }

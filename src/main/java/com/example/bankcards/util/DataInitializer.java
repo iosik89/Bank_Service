@@ -1,7 +1,7 @@
 package com.example.bankcards.util;
 
-import com.example.bankcards.entity.User;
-import com.example.bankcards.repository.UserRepository;
+import com.example.bankcards.store.entities.User;
+import com.example.bankcards.store.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;

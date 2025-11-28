@@ -1,8 +1,8 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.dto.UserDto;
-import com.example.bankcards.entity.User;
-import com.example.bankcards.repository.UserRepository;
+import com.example.bankcards.api.dto.UserDto;
+import com.example.bankcards.store.entities.User;
+import com.example.bankcards.store.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;

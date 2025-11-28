@@ -1,12 +1,17 @@
 databaseChangeLog:
   - changeSet:
-      id: 1
+      id: 2
       author: ruslan
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: card
       changes:
         - createTable:
             tableName: card
             columns:
-                
+
               - column:
                   name: id
                   type: BIGINT
@@ -14,7 +19,7 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     nullable: false
-                    
+
               - column:
                   name: user_id
                   type: BIGINT
@@ -64,17 +69,24 @@ databaseChangeLog:
                   constraints:
                     nullable: false
 
+              - column:
+                  name: block_request
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
         - addUniqueConstraint:
+            tableName: card
             columnNames: pan_hash
             constraintName: uk_card_pan_hash
-            tableName: card
-            
+
         - createIndex:
             tableName: card
             indexName: idx_card_last4
             columns:
               - column:
-                  name: last4  
+                  name: last4
 
         - addForeignKeyConstraint:
             baseTableName: card

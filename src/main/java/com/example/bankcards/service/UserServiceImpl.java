@@ -4,9 +4,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.example.bankcards.dto.UserDto;
-import com.example.bankcards.entity.User;
-import com.example.bankcards.repository.UserRepository;
+import com.example.bankcards.api.dto.UserDto;
+import com.example.bankcards.store.entities.User;
+import com.example.bankcards.store.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 

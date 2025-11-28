@@ -1,6 +1,6 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.dto.UserDto;
+import com.example.bankcards.api.dto.UserDto;
 
 public interface UserService {
 	
