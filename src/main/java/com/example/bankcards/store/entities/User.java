@@ -1,6 +1,7 @@
 package com.example.bankcards.store.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.Constraint;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;

@@ -9,7 +9,7 @@ import com.example.bankcards.exception.DuplicateCardException;
 import com.example.bankcards.store.repository.CardRepository;
 import com.example.bankcards.store.repository.UserRepository;
 import com.example.bankcards.util.CardUtil;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CardServiceImpl implements CardService {
 
 	private final CardRepository cardRepository;

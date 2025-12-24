@@ -37,23 +37,23 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-        .csrf(csrf -> csrf.disable())
-        // Настраиваем авторизацию
-        .authorizeHttpRequests(auth -> auth
-            // Разрешаем доступ к Swagger без авторизации
-            .requestMatchers(
-                "/swagger-ui.html",
-                "/swagger-ui/**",
-                "/v3/api-docs/**"
-            ).permitAll() // Остальные эндпоинты требуют аутентификации
-            
-            .requestMatchers(HttpMethod.POST, "/cards/{cardId}/request-block").hasRole("USER")
-            .requestMatchers(HttpMethod.POST, "/cards/transfer").hasRole("USER")
-            .requestMatchers("/users/**").hasRole("ADMIN")
-            .requestMatchers(HttpMethod.GET,"/cards/**").hasAnyRole("USER","ADMIN")
-            .requestMatchers(HttpMethod.POST,"/cards/**").hasRole("ADMIN")
-            .anyRequest().permitAll()
-        );
+                .csrf(csrf -> csrf.disable())
+                // Настраиваем авторизацию
+                .authorizeHttpRequests(auth -> auth
+                    // Разрешаем доступ к Swagger без авторизации
+                    .requestMatchers(
+                        "/swagger-ui.html",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**"
+                    ).permitAll() // Остальные эндпоинты требуют аутентификации
+
+                    .requestMatchers(HttpMethod.POST, "/cards/{cardId}/request-block").hasRole("USER")
+                    .requestMatchers(HttpMethod.POST, "/cards/transfer").hasRole("USER")
+                    .requestMatchers("/users/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET,"/cards/**").hasAnyRole("USER","ADMIN")
+                    .requestMatchers(HttpMethod.POST,"/cards/**").hasRole("ADMIN")
+                    .anyRequest().permitAll()
+                );
 
         return http.build();
     }
